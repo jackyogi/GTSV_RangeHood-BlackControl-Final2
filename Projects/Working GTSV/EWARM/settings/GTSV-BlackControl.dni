@@ -1,0 +1,135 @@
+[Stack]
+FillEnabled=0
+OverflowWarningsEnabled=1
+WarningThreshold=90
+SpWarningsEnabled=1
+WarnLogOnly=1
+UseTrigger=1
+TriggerName=main
+LimitSize=0
+ByteLimit=50
+[DebugChecksum]
+Checksum=-402877243
+[Exceptions]
+StopOnUncaught=_ 0
+StopOnThrow=_ 0
+[CallStack]
+ShowArgs=0
+[Disassembly]
+MixedMode=1
+[Interrupts]
+Enabled=1
+[MemoryMap]
+Enabled=0
+Base=0
+UseAuto=0
+TypeViolation=1
+UnspecRange=1
+ActionState=1
+[Trace1]
+Enabled=0
+ShowSource=1
+[SWOTraceHWSettings]
+OverrideDefaultClocks=0
+CpuClock=16000000
+ClockAutoDetect=1
+ClockWanted=2000000
+JtagSpeed=2000000
+Prescaler=8
+TimeStampPrescIndex=0
+TimeStampPrescData=0
+PcSampCYCTAP=1
+PcSampPOSTCNT=15
+PcSampIndex=0
+DataLogMode=1
+ITMportsEnable=0
+ITMportsTermIO=0
+ITMportsLogFile=0
+ITMlogFile=$PROJ_DIR$\ITM.log
+[struct_types]
+Fmt0=Channel_Info_T-ECSRefRest	3	0
+Fmt1=Channel_Info_T-IntegratorCounter	3	0
+Fmt2=RTC_DateTypeDef-RTC_Date	3	0
+Fmt3=RTC_DateTypeDef-RTC_Month	3	0
+Fmt4=RTC_DateTypeDef-RTC_WeekDay	3	0
+Fmt5=RTC_DateTypeDef-RTC_Year	3	0
+Fmt6=RTC_TimeTypeDef-RTC_H12	3	0
+Fmt7=RTC_TimeTypeDef-RTC_Hours	3	0
+Fmt8=RTC_TimeTypeDef-RTC_Minutes	3	0
+Fmt9=RTC_TimeTypeDef-RTC_Seconds	3	0
+Fmt10=struct Serial_Cmd_Result_t-data_len	3	0
+Fmt11=struct Serial_Cmd_Result_t-raw_buff	3	0
+Fmt12=struct Serial_Cmd_Result_t-raw_buff_len	3	0
+Fmt13=struct Serial_Parrams_t-light_state	4	0
+Fmt14=struct Serial_Parrams_t-nbr_of_cmd_in_buff	3	0
+Fmt15=struct Serial_Parrams_t-next_cmd_idx	3	0
+Fmt16=struct Serial_Parrams_t-receiving_cmd_idx	3	0
+Fmt17=struct irr_decode_results_t-value	4	0
+Fmt18=struct irr_decode_results_t-value_bit_len	4	0
+[array_types]
+Fmt0=uint32_t[3]	4	0
+Fmt1=uint32_t[8]	1	0
+Fmt2=uint8_t[12]	4	0
+Fmt3=uint8_t[88]	4	0
+[watch_formats]
+Fmt0={W}42:*test_bit	1	0
+Fmt1={W}42:0x40000000 + 0x2400	4	0
+Fmt2={W}42:_lcd_blink_cursor	3	0
+Fmt3={W}42:_lcd_fan_cursor_fast	3	0
+Fmt4={W}42:_lcd_fan_cursor_slow	3	0
+Fmt5={W}42:cnt_50ms	3	0
+Fmt6={W}42:gSystemFlags.blower_apo_mins_tmp	3	0
+Fmt7={W}42:hours	3	0
+Fmt8={W}42:mins	3	0
+Fmt9={W}42:num	3	0
+Fmt10={W}42:pos	3	0
+Fmt11={W}42:serial_rx_state	4	0
+Fmt12={W}42:tmp_ir_cmd	4	0
+Fmt13={W}42:tmp_results	4	0
+[DataLog]
+LogEnabled=0
+SumEnabled=0
+GraphEnabled=0
+ShowTimeLog=1
+ShowTimeSum=1
+[InterruptLog]
+LogEnabled=0
+SumEnabled=0
+GraphEnabled=0
+ShowTimeLog=1
+ShowTimeSum=1
+SumSortOrder=0
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
+[Trace2]
+Enabled=0
+ShowSource=0
+[SWOTraceWindow]
+PcSampling=0
+InterruptLogs=0
+ForcedTimeStamps=0
+EventCPI=0
+EventEXC=0
+EventFOLD=0
+EventLSU=0
+EventSLEEP=0
+[CallStackLog]
+Enabled=0
+[DriverProfiling]
+Enabled=0
+Mode=3
+Graph=0
+Symbiont=0
+Exclusions=
+[Disassemble mode]
+mode=0
+[Breakpoints2]
+Count=0
+[Aliases]
+Count=0
+SuppressDialog=0

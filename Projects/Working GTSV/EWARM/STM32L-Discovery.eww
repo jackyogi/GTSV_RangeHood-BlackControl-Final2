@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\..\..\..\..\..\..\..\Example Download\STM32F0xx_STMTouch_Lib_V1.0.1\Projects\Examples\STM32F0518_Ex01_3TKeys_EVAL\EWARM\my_project.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\STM32L-Discovery.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\..\..\AN3413-Current_consumption_touch_sensing\EWARM\STM32L-Discovery.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>
+
+
