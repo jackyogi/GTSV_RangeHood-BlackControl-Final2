@@ -141,10 +141,6 @@ int main(void)
 	//if(receive a UID) --> compare lower means input slave
 
 
-	for(i=0; i<8; i++){
-		Serial_send_my_uid();
-	}
-
 
   while (1)
   {
@@ -169,48 +165,25 @@ int main(void)
 
 void main_tick(void)
 {
-	uint8_t *other_uid;
-	uint8_t i;
+	uint8_t tmp[8] = {0x3A, 0x05, 0x01, 0x01, 0x42, 0x00, 0x0D, 0x0A};
+	uint8_t *ptmp;
+
 
 	Tsense_key_detect();  //must call this once in each main loop
 	Irr_key_detect();
-	Serial_cmd_detect();
-
-	//check & abitrate for working mode
-	other_uid = Serial_get_other_uid();
-	if(other_uid != NULL){
-		i=0;
-		//find the first diff value
-		while(gSystemFlags.system_uid[i]== *(other_uid+i)){
-			i++;
-		}
-		//compare
-		if(gSystemFlags.system_uid[i] > *(other_uid+i)){
-			gSystemFlags.working_mode = WORKING_OUTPUT_MASTER;
-		}else{
-			gSystemFlags.working_mode = WORKING_INPUT_SLAVE;
-		}
-	} else {//I'm alone so I'm Master
-		gSystemFlags.working_mode = WORKING_OUTPUT_MASTER;
-	}
-
-
 
 	main_big_switch();
 
+	ptmp = Serial_rx_get_1cmd_from_buff();
+	if(ptmp){
+		Serial_tx_send_bytes_non_blocking(ptmp, *ptmp);
+	}
 //for any SYS State
 	if(Tsense_check_key(TSENSE_KEY_LIGHT)
  			|| Irr_check_key(IRR_KEY_LIGHT)){
 		gSystemFlags.light_state ^= 1;
-		Serial_send_cmd_light();
-		Serial_send_cmd_light();
-		//Serial_send_cmd_light();
-	}
-	if(Serial_check_cmd(SERIAL_CMD_LIGHT)){
-		if(_serial_parrams.light_state == 1)
-			gSystemFlags.light_state = 1;
-		else
-			gSystemFlags.light_state = 0;
+		
+		Serial_tx_send_bytes_non_blocking(tmp, 8);
 	}
 
 	if(gSystemFlags.light_state){
@@ -276,11 +249,7 @@ void main_big_switch(void)
 		//*****check keys
 		//key Timer
 		if(Tsense_check_key(TSENSE_KEY_TIMER)
-			  || Irr_check_key(IRR_KEY_TIMER)
-			  || Serial_check_cmd(SERIAL_CMD_TIMER)){
-
-			if(!Serial_check_cmd(SERIAL_CMD_TIMER))
-				Serial_send_cmd(SERIAL_CMD_TIMER);
+			  || Irr_check_key(IRR_KEY_TIMER)){
 			gSystemFlags.tmp_hour = RTC_TimeStructure.RTC_Hours;
 			gSystemFlags.tmp_min = RTC_TimeStructure.RTC_Minutes;
 			gSystemFlags.time_adj_stage =0;
@@ -291,11 +260,8 @@ void main_big_switch(void)
 		}
 		//key plus
 		if(Tsense_check_key(TSENSE_KEY_PLUS)
-			  || Irr_check_key(IRR_KEY_PLUS)
-			  || Serial_check_cmd(SERIAL_CMD_PLUS)){
+			  || Irr_check_key(IRR_KEY_PLUS)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_PLUS))
-				Serial_send_cmd(SERIAL_CMD_PLUS);
 			Blower_set_speed(1);
 			gSystemFlags.sys_state = SYS_STATE_BLOWING;
 			Lcd_clear();
@@ -303,11 +269,8 @@ void main_big_switch(void)
 		}
 		//key minus
 		if(Tsense_check_key(TSENSE_KEY_MINUS)
-			   || Irr_check_key(IRR_KEY_MINUS)
-			   || Serial_check_cmd(SERIAL_CMD_MINUS)){
+			   || Irr_check_key(IRR_KEY_MINUS)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_MINUS))
-				Serial_send_cmd(SERIAL_CMD_MINUS);
 			Blower_set_speed(4);
 			gSystemFlags.sys_state = SYS_STATE_BLOWING;
 			Lcd_clear();
@@ -315,10 +278,8 @@ void main_big_switch(void)
 		}
 		//key auto
 		if(Tsense_check_key(TSENSE_KEY_AUTO)
-			  || Irr_check_key(IRR_KEY_AUTO)
-			  || Serial_check_cmd(SERIAL_CMD_AUTO)){
-			if(!Serial_check_cmd(SERIAL_CMD_AUTO))
-				Serial_send_cmd(SERIAL_CMD_AUTO);
+			  || Irr_check_key(IRR_KEY_AUTO)){
+
 			gSystemFlags.sys_state = SYS_STATE_AUTO;
 			//Lcd_clear();
 
@@ -340,11 +301,8 @@ void main_big_switch(void)
 		//*****check keys
 		//key Auto
 		if(Tsense_check_key(TSENSE_KEY_AUTO)
-			  || Irr_check_key(IRR_KEY_AUTO)
-			  || Serial_check_cmd(SERIAL_CMD_AUTO)){
+			  || Irr_check_key(IRR_KEY_AUTO)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_AUTO))
-				Serial_send_cmd(SERIAL_CMD_AUTO);
 			gSystemFlags.sys_state = SYS_STATE_OFF;
 			//Lcd_clear();
 			Lcd_icon_off(LCD_ROTATE_ICON);
@@ -387,22 +345,15 @@ void main_big_switch(void)
 				 	|| Tsense_check_key_touching(TSENSE_KEY_LIGHT)
 				 	|| Irr_check_key(IRR_KEY_PLUS)
 				 	|| Irr_check_key(IRR_KEY_MINUS)
-				 	|| Irr_check_key(IRR_KEY_LIGHT)
-				 	|| Serial_check_cmd(SERIAL_CMD_RESET_TIME_ADJ_DELAY)){
-				if(!Serial_check_cmd(SERIAL_CMD_RESET_TIME_ADJ_DELAY))
-					Serial_send_cmd(SERIAL_CMD_RESET_TIME_ADJ_DELAY);
+				 	|| Irr_check_key(IRR_KEY_LIGHT)){
+
 				gSystemFlags.time_adj_delay =0;
 			}
 			//key Timer || time_adj_delay
 			if(Tsense_check_key(TSENSE_KEY_TIMER)
 				 ||Irr_check_key(IRR_KEY_TIMER)
-				 ||(gSystemFlags.time_adj_delay > TIME_ADJ_DELAY_DEFAULT)
-				 || Serial_check_cmd(SERIAL_CMD_TIMER)){
+				 ||(gSystemFlags.time_adj_delay > TIME_ADJ_DELAY_DEFAULT)){
 
-				if(Tsense_check_key(TSENSE_KEY_TIMER)
-				 		||Irr_check_key(IRR_KEY_TIMER)){
-					Serial_send_cmd(SERIAL_CMD_TIMER);
-				}
 				gSystemFlags.time_adj_stage++;
 				gSystemFlags.time_adj_delay =0;
 				//if(!Tsense_check_key(TSENSE_KEY_TIMER))
@@ -418,8 +369,6 @@ void main_big_switch(void)
 					gSystemFlags.tmp_hour = 0;
 				else
 					gSystemFlags.tmp_hour++;
-
-				Serial_send_tmp_time();
 			}
 			//key minus
 			if(Tsense_check_key(TSENSE_KEY_MINUS)
@@ -432,12 +381,6 @@ void main_big_switch(void)
 					gSystemFlags.tmp_hour = 23;
 				else
 					gSystemFlags.tmp_hour--;
-				Serial_send_tmp_time();
-			}
-			if(Serial_check_cmd(SERIAL_CMD_TMP_TIME)){
-				gSystemFlags.tmp_hour = _serial_parrams.tmp_hrs;
-				gSystemFlags.tmp_min = _serial_parrams.tmp_mins;
-				gSystemFlags.time_adj_delay =0;
 			}
 
 		}else{  //adj mins
@@ -467,23 +410,15 @@ void main_big_switch(void)
 				 	|| Tsense_check_key_touching(TSENSE_KEY_LIGHT)
 				 	|| Irr_check_key(IRR_KEY_PLUS)
 				 	|| Irr_check_key(IRR_KEY_MINUS)
-				 	|| Irr_check_key(IRR_KEY_LIGHT)
-				 	|| Serial_check_cmd(SERIAL_CMD_RESET_TIME_ADJ_DELAY)){
+				 	|| Irr_check_key(IRR_KEY_LIGHT)){
 
-				if(!Serial_check_cmd(SERIAL_CMD_RESET_TIME_ADJ_DELAY))
-					Serial_send_cmd(SERIAL_CMD_RESET_TIME_ADJ_DELAY);
 				gSystemFlags.time_adj_delay =0;
 			}
 			//key timer || after adj_delay time
 			if(Tsense_check_key(TSENSE_KEY_TIMER)
 					||Irr_check_key(IRR_KEY_TIMER)
-					||(gSystemFlags.time_adj_delay > TIME_ADJ_DELAY_DEFAULT)
-					|| Serial_check_cmd(SERIAL_CMD_TIMER)){
+					||(gSystemFlags.time_adj_delay > TIME_ADJ_DELAY_DEFAULT)){
 
-				if(Tsense_check_key(TSENSE_KEY_TIMER)
-				 		||Irr_check_key(IRR_KEY_TIMER)){
-					Serial_send_cmd(SERIAL_CMD_TIMER);
-				}
 				RTC_change_time(gSystemFlags.tmp_hour, gSystemFlags.tmp_min, 0);
 				//save time
 				//send cmd update time to serial
@@ -502,7 +437,6 @@ void main_big_switch(void)
 					gSystemFlags.tmp_min= 0;
 				else
 					gSystemFlags.tmp_min++;
-				Serial_send_tmp_time();
 			}
 			//key minus
 			if(Tsense_check_key(TSENSE_KEY_MINUS)
@@ -515,14 +449,8 @@ void main_big_switch(void)
 					gSystemFlags.tmp_min = 59;
 				else
 					gSystemFlags.tmp_min--;
-				Serial_send_tmp_time();
 			}
-			//update tmp time
-			if(Serial_check_cmd(SERIAL_CMD_TMP_TIME)){
-				gSystemFlags.tmp_hour = _serial_parrams.tmp_hrs;
-				gSystemFlags.tmp_min = _serial_parrams.tmp_mins;
-				gSystemFlags.time_adj_delay =0;
-			}
+
 		}
 		break;
 	case SYS_STATE_BLOWING:
@@ -542,11 +470,8 @@ void main_big_switch(void)
 		////*****check keys
 		//key plus
 		if(Tsense_check_key(TSENSE_KEY_PLUS)
-			 	|| Irr_check_key(IRR_KEY_PLUS)
-			 	|| Serial_check_cmd(SERIAL_CMD_PLUS)){
+			 	|| Irr_check_key(IRR_KEY_PLUS)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_PLUS))
-				Serial_send_cmd(SERIAL_CMD_PLUS);
 			if(gSystemFlags.blower_fan_speed == 4){
 				Blower_set_speed(0);
 				gSystemFlags.sys_state = SYS_STATE_OFF;
@@ -558,11 +483,8 @@ void main_big_switch(void)
 		}
 		//key minus
 		if(Tsense_check_key(TSENSE_KEY_MINUS)
-			 	|| Irr_check_key(IRR_KEY_MINUS)
-			 	|| Serial_check_cmd(SERIAL_CMD_MINUS)){
+			 	|| Irr_check_key(IRR_KEY_MINUS)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_MINUS))
-				Serial_send_cmd(SERIAL_CMD_MINUS);
 			if(gSystemFlags.blower_fan_speed == 1){
 				Blower_set_speed(0);
 				gSystemFlags.sys_state = SYS_STATE_OFF;
@@ -574,11 +496,8 @@ void main_big_switch(void)
 		}
 		//key auto
 		if(Tsense_check_key(TSENSE_KEY_AUTO)
-			  || Irr_check_key(IRR_KEY_AUTO)
-			  || Serial_check_cmd(SERIAL_CMD_AUTO)){
+			  || Irr_check_key(IRR_KEY_AUTO)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_AUTO))
-				Serial_send_cmd(SERIAL_CMD_AUTO);
 			Blower_set_speed(0);
 			gSystemFlags.sys_state = SYS_STATE_AUTO;
 			Lcd_clear();
@@ -586,11 +505,8 @@ void main_big_switch(void)
 		}
 		//key timer
 		if(Tsense_check_key(TSENSE_KEY_TIMER)
-			 	|| Irr_check_key(IRR_KEY_TIMER)
-			  	|| Serial_check_cmd(SERIAL_CMD_TIMER)){
+			 	|| Irr_check_key(IRR_KEY_TIMER)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_TIMER))
-				Serial_send_cmd(SERIAL_CMD_TIMER);
 			gSystemFlags.tmp_min = 1;
 			gSystemFlags.sys_state = SYS_STATE_BLOWING_APO_ADJ;
 			gSystemFlags.time_adj_delay =0;
@@ -638,11 +554,8 @@ void main_big_switch(void)
 			 	|| Tsense_check_key_touching(TSENSE_KEY_LIGHT)
 			 	|| Irr_check_key(IRR_KEY_PLUS)
 				|| Irr_check_key(IRR_KEY_MINUS)
-				|| Irr_check_key(IRR_KEY_LIGHT)
-			 	|| Serial_check_cmd(SERIAL_CMD_RESET_TIME_ADJ_DELAY)){
+				|| Irr_check_key(IRR_KEY_LIGHT)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_RESET_TIME_ADJ_DELAY))
-				Serial_send_cmd(SERIAL_CMD_RESET_TIME_ADJ_DELAY);
 			gSystemFlags.time_adj_delay =0;
 		}
 		//key plus
@@ -655,7 +568,6 @@ void main_big_switch(void)
 				gSystemFlags.tmp_min= 1;
 			else
 				gSystemFlags.tmp_min++;
-			Serial_send_tmp_time();
 		}
 		//key minus
 		if(Tsense_check_key(TSENSE_KEY_MINUS)
@@ -667,24 +579,14 @@ void main_big_switch(void)
 				gSystemFlags.tmp_min = 15;
 			else
 				gSystemFlags.tmp_min--;
-			Serial_send_tmp_time();
 		}
 		//update tmp time
-		if(Serial_check_cmd(SERIAL_CMD_TMP_TIME)){
-			//gSystemFlags.tmp_hour = _serial_parrams.tmp_hrs;
-			gSystemFlags.tmp_min = _serial_parrams.tmp_mins;
-			gSystemFlags.time_adj_delay =0;
-		}
-
 
 
 		//key auto
 		if(Tsense_check_key(TSENSE_KEY_AUTO)
-			    || Irr_check_key(IRR_KEY_AUTO)
-			  	|| Serial_check_cmd(SERIAL_CMD_AUTO)){
+			    || Irr_check_key(IRR_KEY_AUTO)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_AUTO))
-				Serial_send_cmd(SERIAL_CMD_AUTO);
 			Blower_set_speed(0);
 			gSystemFlags.sys_state = SYS_STATE_AUTO;
 			Lcd_clear();
@@ -692,11 +594,8 @@ void main_big_switch(void)
 		}
 		//key Timer
 		if(Tsense_check_key(TSENSE_KEY_TIMER)
-			  	|| Irr_check_key(IRR_KEY_TIMER)
-			  	|| Serial_check_cmd(SERIAL_CMD_TIMER)){
+			  	|| Irr_check_key(IRR_KEY_TIMER)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_TIMER))
-				Serial_send_cmd(SERIAL_CMD_TIMER);
 			gSystemFlags.sys_state = SYS_STATE_BLOWING;
 			Lcd_icon_off(LCD_CLOCK_ICON);
 			Lcd_icon_off(LCD_COLON_ICON);
@@ -739,11 +638,8 @@ void main_big_switch(void)
 		////*****check keys
 		//key plus
 		if(Tsense_check_key(TSENSE_KEY_PLUS)
-			   	|| Irr_check_key(IRR_KEY_PLUS)
-			 	|| Serial_check_cmd(SERIAL_CMD_PLUS)){
+			   	|| Irr_check_key(IRR_KEY_PLUS)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_PLUS))
-				Serial_send_cmd(SERIAL_CMD_PLUS);
 			if(gSystemFlags.blower_fan_speed == 4){
 				Blower_set_speed(0);
 				gSystemFlags.sys_state = SYS_STATE_OFF;
@@ -755,11 +651,9 @@ void main_big_switch(void)
 		}
 		//key minus
 		if(Tsense_check_key(TSENSE_KEY_MINUS)
-			 	|| Irr_check_key(IRR_KEY_MINUS)
-			 	|| Serial_check_cmd(SERIAL_CMD_MINUS)){
+			 	|| Irr_check_key(IRR_KEY_MINUS)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_MINUS))
-				Serial_send_cmd(SERIAL_CMD_MINUS);
+
 			if(gSystemFlags.blower_fan_speed == 1){
 				Blower_set_speed(0);
 				gSystemFlags.sys_state = SYS_STATE_OFF;
@@ -771,11 +665,8 @@ void main_big_switch(void)
 		}
 		//key auto
 		if(Tsense_check_key(TSENSE_KEY_AUTO)
-			    || Irr_check_key(IRR_KEY_AUTO)
-			  	|| Serial_check_cmd(SERIAL_CMD_AUTO)){
+			    || Irr_check_key(IRR_KEY_AUTO)){
 
-			if(!Serial_check_cmd(SERIAL_CMD_AUTO))
-				Serial_send_cmd(SERIAL_CMD_AUTO);
 			Blower_set_speed(0);
 			gSystemFlags.sys_state = SYS_STATE_AUTO;
 			Lcd_clear();
@@ -786,11 +677,7 @@ void main_big_switch(void)
 		//key timer up & not holding
 		if((Tsense_check_key_up(TSENSE_KEY_TIMER)
 			  && (!Tsense_check_key_holding(TSENSE_KEY_TIMER)))
-			     || Irr_check_key(IRR_KEY_TIMER)
-			  	|| Serial_check_cmd(SERIAL_CMD_TIMER)){
-
-			if(!Serial_check_cmd(SERIAL_CMD_TIMER))
-				Serial_send_cmd(SERIAL_CMD_TIMER);
+			     || Irr_check_key(IRR_KEY_TIMER)){
 
 			gSystemFlags.sys_state = SYS_STATE_BLOWING;
 			Lcd_icon_off(LCD_CLOCK_ICON);
@@ -873,6 +760,31 @@ void Blower_set_speed(uint8_t spd)
 		break;
 	}
 }
+
+void arbitrate_for_master(void)
+{
+	uint8_t *other_uid;
+	uint8_t i;
+
+	//check & abitrate for working mode
+	other_uid = NULL;
+	if(other_uid != NULL){
+		i=0;
+		//find the first diff value
+		while(gSystemFlags.system_uid[i]== *(other_uid+i)){
+			i++;
+		}
+		//compare
+		if(gSystemFlags.system_uid[i] > *(other_uid+i)){
+			gSystemFlags.working_mode = WORKING_OUTPUT_MASTER;
+		}else{
+			gSystemFlags.working_mode = WORKING_INPUT_SLAVE;
+		}
+	} else {//I'm alone so I'm Master
+		gSystemFlags.working_mode = WORKING_OUTPUT_MASTER;
+	}
+}
+
 
 void Cpu_to_default_config(void)
 {

@@ -150,8 +150,8 @@ void SysTick_Handler(void)
 		if((msTicks%50) == 0){
 			gSystemFlags.ms50_flag = 1;
 			Buzzer_off_timing_tick50ms();
+			Serial_time_tick50ms();
 			if((msTicks%100) == 0){
-				Serial_time_out_tick();
 				gSystemFlags.ms100_flag = 1;
 				if((msTicks%200)==0)
 					gSystemFlags.ms200_flag =1;					
@@ -323,13 +323,13 @@ void USART1_IRQHandler(void)
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) == SET){
 		Serial_rx_ISR();
 	}
-	/*
-	if(USART_GetITStatus(USART1, USART_IT_TXE) == SET){
-		Serial_tx_ISR();
 
+	if(USART_GetITStatus(USART1, USART_IT_TXE) == SET){
+		//USART1->SR 
+		Serial_tx_ISR();
+		
 	}
 
-	*/
 
 }
 
