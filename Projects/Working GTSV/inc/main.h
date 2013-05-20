@@ -30,6 +30,7 @@
 #include "GTSV_TSense.h"
 #include "buzzer.h"
 #include "GTSV_serial.h"
+#include "GTSV_RH_RTC_config.h"
 #include <stdint.h>
 #include <stdio.h>
 
@@ -53,7 +54,7 @@ struct SystemConfig {
 
 };
 
-enum System_state_enum_t {
+enum System_State_Enum_t {
 	SYS_STATE_OFF,
 	SYS_STATE_AUTO,
 	SYS_STATE_CLK_ADJ,
@@ -62,7 +63,7 @@ enum System_state_enum_t {
 	SYS_STATE_BLOWING_APO	
 };
 
-enum System_working_mode_enum_t {
+enum System_Working_Mode_Enum_t {
 	WORKING_INPUT_SLAVE,
 	WORKING_OUTPUT_MASTER
 };
@@ -76,17 +77,23 @@ struct SystemFlags {
 	unsigned ms500_flag:1;
 	unsigned ms300_flag:1;
 	unsigned msMain_flag:1;
+	unsigned s1_flag:1;
+	unsigned s2_flag:1;
+	unsigned s3_flag:1;
+	unsigned s5_flag:1;
 	unsigned fanRotate:2;
 
 	unsigned light_state:1;
 	unsigned led_backlight:1;
 	unsigned time_adj_stage:1;
 	unsigned blower_apo_time_out:1;
+	unsigned partner_uid_valid:1;
+	unsigned control_master:1;
 
 //when start up, default working mode to INPUT_SLAVE
 //any touch button --> send cmd --> Wait util Ack --> working_mode = OUTPUT_MASTER
 //any correct command from serials --> INPUT_SLAVE --> Ack
-	enum System_working_mode_enum_t working_mode;
+	enum System_Working_Mode_Enum_t working_mode;
 	
 	uint8_t  msMainTick;
 	uint8_t  time_adj_delay;
@@ -95,20 +102,22 @@ struct SystemFlags {
 	uint8_t  blower_apo_mins_tmp;
 	uint8_t  blower_apo_mins;
 	uint8_t  blower_fan_speed;
-	enum System_state_enum_t sys_state;
+	enum System_State_Enum_t sys_state;
 	RTC_TimeTypeDef blower_apo_begin;
 	RTC_TimeTypeDef blower_apo_end;
 	uint16_t blower_apo_remaining_sec;
 
 	uint8_t system_uid[12];
-	
+	uint8_t partner_uid[12];
 	
 };
 
-
+//extern struct System_State_t gSys_state;
 extern uint16_t msTicks;
 extern struct SystemFlags gSystemFlags;
 extern uint32_t tmp_ir_cmd;
+extern struct Serial_Tx_Packet_t tx_pk;
+extern struct Serial_Cmd_Result_t results;
 
 /* Exported constants --------------------------------------------------------*/
 #define DEBUG
@@ -119,7 +128,7 @@ extern uint32_t tmp_ir_cmd;
 #define INT_PRIORITY_USART1		((1 << __NVIC_PRIO_BITS) -2) //-->make sure no lost
 
 #define MAIN_TICK_MS			25
-#define TIME_ADJ_DELAY_DEFAULT	88
+#define TIME_ADJ_DELAY_DEFAULT	188
 
 
 /* Exported macro ------------------------------------------------------------*/
@@ -204,6 +213,7 @@ bool Systick_check_delay50ms(void);
 void main_big_switch(void);
 void main_tick(void);
 
+void Serial_cmd_process(void);
 
 #endif /* __MAIN_H */
 

@@ -253,7 +253,7 @@ void Lcd_blink_systicISR_ms(void)
 	 if(++ms125Tick==8)
 		 ms125Tick = 0;
 	 
-	 if(ms125Tick<4){
+	 if(ms125Tick<6){
 		 //_lcd_icons |= _lcd_blink_mask;
 		 _lcd_blink_cursor = 1;
  

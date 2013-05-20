@@ -306,6 +306,13 @@ void RTC_WKUP_IRQHandler (void)
 				gSystemFlags.blower_apo_remaining_sec--;
 			}
 		}
+		gSystemFlags.s1_flag = 1;
+		if(sec1Tick%2)
+			gSystemFlags.s2_flag=1;
+		if(sec1Tick%3)
+			gSystemFlags.s3_flag=1;
+		if(sec1Tick%5)
+			gSystemFlags.s5_flag=1;
 	}
 
 	Tsense_key_hold_detect_tick125ms();

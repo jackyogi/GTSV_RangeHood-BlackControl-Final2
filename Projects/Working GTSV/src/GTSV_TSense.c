@@ -146,11 +146,11 @@ void Tsense_to_default_config(void)
 		sSCKeyInfo[i].DxSGroup = 0x01;
 	}
 	#endif
-	sSCKeyInfo[2].DetectThreshold = 38;
-	sSCKeyInfo[2].EndDetectThreshold = 38;
+	sSCKeyInfo[2].DetectThreshold = 89;
+	sSCKeyInfo[2].EndDetectThreshold = 89;
 	sSCKeyInfo[2].RecalibrationThreshold = -22;
-	sSCKeyInfo[4].DetectThreshold = 58;
-	sSCKeyInfo[4].EndDetectThreshold = 58;
+	sSCKeyInfo[4].DetectThreshold = 99;
+	sSCKeyInfo[4].EndDetectThreshold = 99;
 	sSCKeyInfo[4].RecalibrationThreshold = -22;
 	// Change thresholds of specific keys
 	/*
