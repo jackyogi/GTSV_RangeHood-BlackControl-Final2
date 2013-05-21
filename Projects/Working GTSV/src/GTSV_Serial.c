@@ -330,7 +330,8 @@ void Serial_cmd_detect(void)
 					gSystemFlags.blower_apo_time_out = 0;
 				}					
 				gSystemFlags.sys_state = SYS_STATE_BLOWING_APO;
-				Blower_set_speed(*(results.pdata+2));
+				if(*(results.pdata+2) !=0)
+					Blower_set_speed(*(results.pdata+2));
 				break;
 			default:
 				break;

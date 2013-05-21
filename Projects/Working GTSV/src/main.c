@@ -294,7 +294,7 @@ void main_big_switch(void)
 		else
 			Lcd_icon_off(LCD_COLON_ICON);
 
-
+		Blower_set_speed(0);
 		//*****check keys
 		//key Timer
 		if(Tsense_check_key(TSENSE_KEY_TIMER)
@@ -359,7 +359,7 @@ void main_big_switch(void)
 		Lcd_icon_on(LCD_ROTATE_ICON);
 		all_ui_led_off();
 		LED_AUTO_BT = 1;
-
+		Blower_set_speed(0);
 		//*****check keys
 		//key Auto
 		if(Tsense_check_key(TSENSE_KEY_AUTO)
@@ -380,7 +380,7 @@ void main_big_switch(void)
 		LED_TIMER_BT = 1;
 		LED_PLUS_BT = 1;
 		LED_MINUS_BT = 1;
-
+		Blower_set_speed(0);
 
 		if(gSystemFlags.time_adj_stage == 0){ //adj hours
 			//*****update LCD & LED
@@ -787,7 +787,7 @@ void main_big_switch(void)
 
 		//check auto power off time out
 		if(gSystemFlags.blower_apo_time_out){
-			Blower_set_speed(0);
+			//Blower_set_speed(0);
 			gSystemFlags.sys_state = SYS_STATE_OFF;
 			//Lcd_clear();
 			//all_ui_led_off();
@@ -954,18 +954,18 @@ void Ports_to_input_slave_config(void)
 	//config GPIO for FAN:
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
 //config GPIO for LMP  :
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 }

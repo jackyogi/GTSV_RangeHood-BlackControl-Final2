@@ -85,6 +85,7 @@ struct SystemFlags {
 
 	unsigned light_state:1;
 	unsigned led_backlight:1;
+	
 	unsigned time_adj_stage:1;
 	unsigned blower_apo_time_out:1;
 	unsigned partner_uid_valid:1;
@@ -103,8 +104,6 @@ struct SystemFlags {
 	uint8_t  blower_apo_mins;
 	uint8_t  blower_fan_speed;
 	enum System_State_Enum_t sys_state;
-	RTC_TimeTypeDef blower_apo_begin;
-	RTC_TimeTypeDef blower_apo_end;
 	uint16_t blower_apo_remaining_sec;
 
 	uint8_t system_uid[12];
@@ -175,12 +174,12 @@ extern struct Serial_Cmd_Result_t results;
 #define LED_MINUS_BT	BITBAND_POINTER_AT(GPIOA_BASE + ODR_REG_OFFSET, 4)
 #define LED_AUTO_BT		BITBAND_POINTER_AT(GPIOA_BASE + ODR_REG_OFFSET, 1)
 
-#define MAIN_LAMP		BITBAND_POINTER_AT(GPIOB_BASE + ODR_REG_OFFSET, 7)
-#define MAIN_LAMP_ON	BITBAND_POINTER_AT(GPIOB_BASE + BSRRL_REG_OFFSET, 7) = 1
-#define MAIN_LAMP_OFF	BITBAND_POINTER_AT(GPIOB_BASE + BSRRH_REG_OFFSET, 7) = 1
+#define MAIN_LAMP		BITBAND_POINTER_AT(GPIOC_BASE + ODR_REG_OFFSET, 13)
+#define MAIN_LAMP_ON	BITBAND_POINTER_AT(GPIOC_BASE + BSRRL_REG_OFFSET, 13) = 1
+#define MAIN_LAMP_OFF	BITBAND_POINTER_AT(GPIOC_BASE + BSRRH_REG_OFFSET, 13) = 1
 
-#define BLOWER_FAN1		BITBAND_POINTER_AT(GPIOC_BASE + ODR_REG_OFFSET, 2)
-#define BLOWER_FAN2		BITBAND_POINTER_AT(GPIOC_BASE + ODR_REG_OFFSET, 3)
+#define BLOWER_FAN1		BITBAND_POINTER_AT(GPIOC_BASE + ODR_REG_OFFSET, 3)
+#define BLOWER_FAN2		BITBAND_POINTER_AT(GPIOC_BASE + ODR_REG_OFFSET, 2)
 #define BLOWER_FAN3		BITBAND_POINTER_AT(GPIOC_BASE + ODR_REG_OFFSET, 1)
 #define BLOWER_FAN4		BITBAND_POINTER_AT(GPIOC_BASE + ODR_REG_OFFSET, 0)
 
