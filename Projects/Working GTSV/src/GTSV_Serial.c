@@ -315,7 +315,9 @@ void Serial_cmd_detect(void)
 				break;
 			case SYS_STATE_BLOWING:
 				gSystemFlags.sys_state = SYS_STATE_BLOWING;
-				Blower_set_speed(*(results.pdata+2));
+				//Blower_set_speed(*(results.pdata+2));
+				if(*(results.pdata+2) !=0)
+					Blower_set_speed(*(results.pdata+2));
 				
 				break;
 			case SYS_STATE_BLOWING_APO_ADJ:
@@ -326,7 +328,7 @@ void Serial_cmd_detect(void)
 				break;
 			case SYS_STATE_BLOWING_APO:
 				if(gSystemFlags.sys_state == SYS_STATE_BLOWING_APO_ADJ){
-					gSystemFlags.blower_apo_remaining_sec = gSystemFlags.tmp_min*60;
+					gSystemFlags.blower_apo_remaining_sec = gSystemFlags.tmp_min*60+1;
 					gSystemFlags.blower_apo_time_out = 0;
 				}					
 				gSystemFlags.sys_state = SYS_STATE_BLOWING_APO;

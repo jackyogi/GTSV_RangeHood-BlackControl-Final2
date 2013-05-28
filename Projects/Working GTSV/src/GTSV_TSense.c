@@ -146,9 +146,11 @@ void Tsense_to_default_config(void)
 		sSCKeyInfo[i].DxSGroup = 0x01;
 	}
 	#endif
+	//timer button 
 	sSCKeyInfo[2].DetectThreshold = 89;
 	sSCKeyInfo[2].EndDetectThreshold = 89;
 	sSCKeyInfo[2].RecalibrationThreshold = -10;
+	
 	sSCKeyInfo[4].DetectThreshold = 99;
 	sSCKeyInfo[4].EndDetectThreshold = 99;
 	sSCKeyInfo[4].RecalibrationThreshold = -10;

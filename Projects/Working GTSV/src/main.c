@@ -250,9 +250,9 @@ void main_tick(void)
 		//Ports_to_input_slave_config();
 	}
 
-	if((gSystemFlags.control_master) && gSystemFlags.ms100_flag){
+	if((gSystemFlags.control_master) && gSystemFlags.uart_update_flag){
 		Serial_tx_send_sys_state_upd_cmd();
-		gSystemFlags.ms100_flag = 0;
+		gSystemFlags.uart_update_flag = 0;
 	}
 
 /*
@@ -281,6 +281,7 @@ void main_big_switch(void)
 	
 	switch(gSystemFlags.sys_state){
 	case SYS_STATE_OFF:
+		Blower_set_speed(0);
 		//*****update LCD & LED
 		Lcd_icon_off(LCD_CLOCK_ICON);
 		Lcd_icon_off(LCD_ROTATE_ICON);
@@ -294,7 +295,7 @@ void main_big_switch(void)
 		else
 			Lcd_icon_off(LCD_COLON_ICON);
 
-		Blower_set_speed(0);
+		
 		//*****check keys
 		//key Timer
 		if(Tsense_check_key(TSENSE_KEY_TIMER)
@@ -345,6 +346,7 @@ void main_big_switch(void)
 
 		break;
 	case SYS_STATE_AUTO:
+		Blower_set_speed(0);
 		//*****update LCD & LED
 		Lcd_icon_off(LCD_CLOCK_ICON);
 		Lcd_icon_off(LCD_ROTATE_ICON);
@@ -359,7 +361,7 @@ void main_big_switch(void)
 		Lcd_icon_on(LCD_ROTATE_ICON);
 		all_ui_led_off();
 		LED_AUTO_BT = 1;
-		Blower_set_speed(0);
+		
 		//*****check keys
 		//key Auto
 		if(Tsense_check_key(TSENSE_KEY_AUTO)

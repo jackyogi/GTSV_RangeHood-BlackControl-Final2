@@ -155,11 +155,14 @@ void SysTick_Handler(void)
 				gSystemFlags.ms100_flag = 1;
 				if((msTicks%200)==0)
 					gSystemFlags.ms200_flag =1;					
-				if((msTicks%300) == 0)
+				if((msTicks%300) == 0){
 					gSystemFlags.ms300_flag = 1;
-				if((msTicks%500) == 0)
+					
+				}
+				if((msTicks%500) == 0){
 					gSystemFlags.ms500_flag = 1;
-				
+					gSystemFlags.uart_update_flag =1;
+				}
 				//Tsense_key_detect_tick50ms();
 				
 			}

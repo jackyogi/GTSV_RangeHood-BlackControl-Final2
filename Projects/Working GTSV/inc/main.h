@@ -82,7 +82,7 @@ struct SystemFlags {
 	unsigned s3_flag:1;
 	unsigned s5_flag:1;
 	unsigned fanRotate:2;
-
+	unsigned uart_update_flag:1;
 	unsigned light_state:1;
 	unsigned led_backlight:1;
 	
